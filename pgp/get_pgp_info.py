@@ -3,14 +3,14 @@ import requests
 import sys
 
 
+# Example: python get_pgp_info.py fred@flintstone.com get
+
 def get_info_from_keyserver(search_term, op_value="index"):
 
-    # curl -s 'https://pgp.mit.edu/pks/lookup?op=get&search=0xsomefingerprint'
-
-    url = "https://hkps.pool.sks-keyservers.net/pks/lookup?op={op_value}&search={search_term}".format(
-        op_value=op_value, search_term=search_term)
-    print(url)
-    response = requests.get(url, verify='sks-keyservers.net-CA.pem')
+    url = "https://hkps.pool.sks-keyservers.net/pks/lookup"
+    payload = {'op':op_value, 'search':search_term, 'options':'mr'}
+    response = requests.get(url, params=payload, verify='sks-keyservers.net-CA.pem')
+    print(response.url)
     return response.text
 
 
