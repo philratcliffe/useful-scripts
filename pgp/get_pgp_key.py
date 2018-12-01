@@ -1,3 +1,49 @@
+import pprint
+import sys
+import urllib
+import urllib2
+
+KEY_SERVERS = ["https://hkps.pool.sks-keyservers.net"]
+
+# Example: python get_pgp_key.py fred@flintstone.com get
+
+def search_key_using_email_address(email_address):
+
+        for key_server in KEY_SERVERS:
+            vars = {"search":email_address, \
+                    "op": "index",\
+                    "fingerprint":"on",\
+                    "options": "mr"}
+
+            url = "{}/pks/lookup?".format(key_server) + urllib.urlencode(vars)
+            print(url)
+            try:
+                error = None
+                response = urllib2.urlopen(url)
+            except urllib2.HTTPError as e:
+                error = True
+                print('{}'.format(e))
+
+        if error:
+            return "error"
+        return(response.read())
+
+def get_key():
+    pass
+
+if __name__ == '__main__':
+
+    arg_list = []
+    arg_count = len(sys.argv)
+
+    if (arg_count < 2) or (arg_count > 3):
+        sys.exit("\n\nUsage: {} email-address]\n\n".format(sys.argv[0]))
+
+    html_result = search_key_using_email_address(sys.argv[1])
+    print(html_result)
+
+
+SKS_SERVERS_CA_CERT = """
 -----BEGIN CERTIFICATE-----
 MIIFizCCA3OgAwIBAgIJAK9zyLTPn4CPMA0GCSqGSIb3DQEBBQUAMFwxCzAJBgNV
 BAYTAk5PMQ0wCwYDVQQIDARPc2xvMR4wHAYDVQQKDBVza3Mta2V5c2VydmVycy5u
@@ -30,3 +76,5 @@ f4p1bjbAox8eAOQS/8a3bzkJzdyBNUKGx1BIK2IBL9bn/HravSDOiNRSnZ/R3l9G
 ZauX0tu7IIDlRCILXSyeazu0aj/vdT3YFQXPcvt5Fkf5wiNTo53f72/jYEJd6qph
 WrpoKqrwGwTpRUCMhYIUt65hsTxCiJJ5nKe39h46sg==
 -----END CERTIFICATE-----
+"""
+
