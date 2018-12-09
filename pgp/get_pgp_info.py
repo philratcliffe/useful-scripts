@@ -1,7 +1,7 @@
 import pprint
 import requests
 import sys
-from urllib.parse import urlparse
+from urlparse import urlparse
 
 SERVERS = ["hkps://hkps.pool.sks-keyservers.net"]
 
