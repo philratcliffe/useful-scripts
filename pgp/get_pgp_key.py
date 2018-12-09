@@ -2,12 +2,13 @@ import pprint
 import sys
 import urllib
 import urllib2
+import re
 
 KEY_SERVERS = ["https://hkps.pool.sks-keyservers.net"]
 
 # Example: python get_pgp_key.py fred@flintstone.com get
 
-def search_key_using_email_address(email_address):
+def get_key_using_email_address(email_address):
 
         for key_server in KEY_SERVERS:
             vars = {"search":email_address, \
@@ -16,20 +17,52 @@ def search_key_using_email_address(email_address):
                     "options": "mr"}
 
             url = "{}/pks/lookup?".format(key_server) + urllib.urlencode(vars)
-            print(url)
             try:
                 error = None
-                response = urllib2.urlopen(url)
+                response = urllib2.urlopen(url, cafile=__file__)
+            except urllib2.HTTPError as e:
+                error = True
+                print('{}'.format(e))
             except urllib2.HTTPError as e:
                 error = True
                 print('{}'.format(e))
 
         if error:
             return "error"
-        return(response.read())
 
-def get_key():
-    pass
+        fingerprint = get_fingerprint_from_response(response.read())
+        return (get_key_using_fingerprint(fingerprint))
+
+def get_fingerprint_from_response(response):
+    m = re.search('pub:(.+?):', response.strip('\n'))
+    fingerprint = "0x{}".format(m.group(1))
+    return fingerprint
+
+def get_key_using_fingerprint(fingerprint):
+        vars = {"search":fingerprint, \
+                "op": "get",\
+                "options": "mr"}
+
+        for key_server in KEY_SERVERS:
+            url = "{}/pks/lookup?".format(key_server) + urllib.urlencode(vars)
+            print(url)
+            try:
+                response = urllib2.urlopen(url, cafile=__file__)
+                error = None
+                break
+            except urllib2.URLError as e:
+                error = str(e.reason)
+            except urllib2.HTTPError as e:
+                error = str(e)
+
+        if error:
+            print(error)
+            return {}
+        ret_val = response.read()
+        print(ret_val)
+        return ret_val
+
+
 
 if __name__ == '__main__':
 
@@ -39,7 +72,7 @@ if __name__ == '__main__':
     if (arg_count < 2) or (arg_count > 3):
         sys.exit("\n\nUsage: {} email-address]\n\n".format(sys.argv[0]))
 
-    html_result = search_key_using_email_address(sys.argv[1])
+    html_result = get_key_using_email_address(sys.argv[1])
     print(html_result)
 
 
