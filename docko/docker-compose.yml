@@ -1,0 +1,9 @@
+version: "3.7"
+
+services:
+  phils-container:
+    volumes:
+      - .:/app
+    image: phil1 
+    command: python script.py
+
