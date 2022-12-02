@@ -2,20 +2,20 @@ import datetime as dt
 
 import yfinance as yf
 
+
 def display_ticker_info(ticker):
 
-    end_date = dt.datetime.now() + dt.timedelta(days=1)
     days = 90
-    start_date = end_date - dt.timedelta(days=days)
+    start_date = dt.datetime.now() - dt.timedelta(days=days)
+    end_date = dt.datetime.now()
 
     # get long name of ticker
     ticker_info = yf.Ticker(ticker)
-    ticker_name = ticker_info.info['longName']
-
+    ticker_name = ticker_info.info["longName"]
 
     df = yf.download(ticker, start_date, end_date)
     df = df.loc[:, ["Close"]]
-    
+
     # divide Close by 100 to get the price in GBP and round to 2 decimal places
     df["Close"] = round(df["Close"] / 100, 2)
 
@@ -27,8 +27,10 @@ def display_ticker_info(ticker):
     # get the current value
     current_value = df["Close"].iloc[-1]
 
-    # calculate percentage change from current value to value 90 days ago 
-    percentage_change = round((current_value - df["Close"].iloc[0]) / df["Close"].iloc[0] * 100, 2)
+    # calculate percentage change from current value to value 90 days ago
+    percentage_change = round(
+        (current_value - df["Close"].iloc[0]) / df["Close"].iloc[0] * 100, 2
+    )
 
     # order the dataframe by date descending
     df = df.sort_values(by="Date", ascending=False)
@@ -43,6 +45,7 @@ def display_ticker_info(ticker):
     print(f"Current: {current_value}")
     print(f"Percentage change from 90 days ago: {percentage_change}%")
 
+
 tickers = ("0P0000TKZI.L", "0P0000TKZK.L")
-for ticker in tickers:
-    display_ticker_info(ticker)
+for ticker_code in tickers:
+    display_ticker_info(ticker_code)
