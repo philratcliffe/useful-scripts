@@ -11,7 +11,10 @@ def display_ticker_info(ticker):
 
     # get long name of ticker
     ticker_info = yf.Ticker(ticker)
-    ticker_name = ticker_info.info["longName"]
+    if ticker_info.info:
+        ticker_name = ticker_info.info.get("longName", "Ticker long name not available")
+    else:
+        ticker_name = "Error getting ticker info"
 
     df = yf.download(ticker, start_date, end_date)
     df = df.loc[:, ["Close"]]
