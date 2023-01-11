@@ -39,14 +39,15 @@ def display_ticker_info(ticker):
     df = df.sort_values(by="Date", ascending=False)
 
     print(f"\n\n---------------{ticker_name}---------------\n")
-    print(df)
+    print(df.head())
+    print(df.tail())
 
     print(f"\n\nStats for past {days} days:")
     print(f"Max: {max_value}")
     print(f"Min: {min_value}")
     print(f"Avg: {avg_value}")
     print(f"Current: {current_value}")
-    print(f"Percentage change from 90 days ago: {percentage_change}%")
+    print(f"Percentage change from {days} days ago: {percentage_change}%")
 
 
 tickers = ("0P0000TKZI.L", "0P0000TKZK.L")
